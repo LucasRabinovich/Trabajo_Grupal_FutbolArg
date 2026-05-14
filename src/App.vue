@@ -44,6 +44,7 @@ const savePost = async () => {
     }
     isEdit.value = false;
     currentId.value = null;
+    fetchPosts()
   } catch (error) {
     console.error('Error saving post:', error);
   }
