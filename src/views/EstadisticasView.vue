@@ -71,45 +71,51 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { obtenerEquiposLigaArgentina } from '../services/footballApi'
+import {
+  crearMapaLogos,
+  obtenerEscudoDesdeMapa
+} from '../services/escudosService'
+import {
+  obtenerGoleadores,
+  obtenerAsistidores,
+  obtenerVallas
+} from '../services/estadisticasService'
 
 const goleadores = ref([])
 const asistidores = ref([])
 const vallas = ref([])
+const logosEquipos = ref({})
 
-const fetchEstadisticas = () => {
-  goleadores.value = [
-    { id: 1, jugador: 'Gabriel Ávalos', equipo: 'Independiente', cantidad: 10 },
-    { id: 2, jugador: 'Jordy Caicedo', equipo: 'Huracán', cantidad: 8 },
-    { id: 3, jugador: 'Cristian Tarragona', equipo: 'Unión (Santa Fe)', cantidad: 8 },
-    { id: 4, jugador: 'Fabrizio Sartori', equipo: 'Independiente Rivadavia', cantidad: 7 },
-    { id: 5, jugador: 'David Romero', equipo: 'Tigre', cantidad: 7 }
-  ]
+const cargarEstadisticas = () => {
+  goleadores.value = obtenerGoleadores()
+  asistidores.value = obtenerAsistidores()
+  vallas.value = obtenerVallas()
+}
 
-  asistidores.value = [
-    { id: 1, jugador: 'Sebastián Villa', equipo: 'Independiente Rivadavia', cantidad: 6 },
-    { id: 2, jugador: 'Tiago Palacios', equipo: 'Unión (Santa Fe)', cantidad: 6 },
-    { id: 3, jugador: 'Diego Valdés', equipo: 'Vélez Sarsfield', cantidad: 5 },
-    { id: 4, jugador: 'Lucas Passerini', equipo: 'Belgrano', cantidad: 5 },
-    { id: 5, jugador: 'Facundo Lencioni', equipo: 'Gimnasia y Esgrima (Mendoza)', cantidad: 5 }
-  ]
+const cargarEscudos = async () => {
+  try {
+    const equiposApi = await obtenerEquiposLigaArgentina()
 
-  vallas.value = [
-    { id: 1, jugador: 'Fernando Muslera', equipo: 'Estudiantes de La Plata', cantidad: 10 },
-    { id: 2, jugador: 'Santiago Beltrán', equipo: 'River Plate', cantidad: 8 },
-    { id: 3, jugador: 'Agustín Marchesín', equipo: 'Boca Juniors', cantidad: 8 },
-    { id: 4, jugador: 'Javier Burrai', equipo: 'Sarmiento (Junín)', cantidad: 7 },
-    { id: 5, jugador: 'Facundo Sanguinetti', equipo: 'Banfield', cantidad: 6 }
-  ]
+    logosEquipos.value = crearMapaLogos(equiposApi)
+  } catch (error) {
+    console.error('Error al cargar escudos de estadísticas:', error)
+
+    logosEquipos.value = {}
+  }
 }
 
 const obtenerEscudo = (nombre) => {
-  let nombreLimpio = String(nombre).toLowerCase().replace(/ /g, '-').replace(/[()]/g, '').replace(/'/g, '')
-  let urlLocal = new URL(`../assets/escudos/${nombreLimpio}.png`, import.meta.url).href
-  return urlLocal
+  return obtenerEscudoDesdeMapa(logosEquipos.value, nombre)
+}
+
+const cargarDatos = async () => {
+  cargarEstadisticas()
+  await cargarEscudos()
 }
 
 onMounted(() => {
-  fetchEstadisticas()
+  cargarDatos()
 })
 </script>
 
