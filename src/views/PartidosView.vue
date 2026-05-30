@@ -42,8 +42,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { obtenerPartidos } from '../services/partidosService'
-import { obtenerEquiposLigaArgentina } from '../services/footballApi'
+import {
+  obtenerPartidos,
+  obtenerPartidosApi
+} from '../services/partidosService'
+import {
+  obtenerEquiposLigaArgentina,
+  obtenerFixturesLigaArgentina
+} from '../services/footballApi'
 import {
   crearMapaLogos,
   obtenerEscudoDesdeMapa
@@ -64,13 +70,29 @@ const cargarEscudos = async () => {
   }
 }
 
-const cargarPartidos = () => {
-  partidos.value = obtenerPartidos()
+const cargarPartidos = async () => {
+  try {
+    const partidosApi = await obtenerFixturesLigaArgentina()
+
+    console.log(
+      [...new Set(
+        partidosApi.map(
+          partido => partido.fixture.status.short
+        )
+      )]
+    )
+
+    partidos.value = obtenerPartidosApi(partidosApi)
+  } catch (error) {
+    console.error(error)
+
+    partidos.value = obtenerPartidos()
+  }
 }
 
 const cargarDatos = async () => {
-  cargarPartidos()
   await cargarEscudos()
+  await cargarPartidos()
 }
 
 const obtenerEscudo = (nombre) => {

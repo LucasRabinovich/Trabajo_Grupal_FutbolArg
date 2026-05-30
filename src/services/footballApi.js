@@ -4,20 +4,43 @@ const headers = {
   'x-apisports-key': import.meta.env.VITE_API_FOOTBALL_KEY
 }
 
-const obtenerEquiposLigaArgentina = async () => {
-  const respuesta = await fetch(`${API_URL}/teams?league=128&season=2024`, {
+const obtenerDatosApi = async (endpoint, mensajeError) => {
+  const respuesta = await fetch(`${API_URL}${endpoint}`, {
     headers
   })
 
   const datos = await respuesta.json()
 
-  if (!respuesta.ok || datos.errors.length > 0) {
-    throw new Error('Error al obtener equipos de API-Football')
+  if (!respuesta.ok) {
+    throw new Error(mensajeError)
   }
 
   return datos.response
 }
 
+const obtenerEquiposLigaArgentina = async () => {
+  return obtenerDatosApi(
+    '/teams?league=128&season=2024',
+    'Error al obtener equipos'
+  )
+}
+
+const obtenerFixturesLigaArgentina = async () => {
+  return obtenerDatosApi(
+    '/fixtures?league=128&season=2024',
+    'Error al obtener partidos'
+  )
+}
+
+const obtenerTablaLigaArgentina = async () => {
+  return obtenerDatosApi(
+    '/standings?league=128&season=2024',
+    'Error al obtener tabla de posiciones'
+  )
+}
+
 export {
-  obtenerEquiposLigaArgentina
+  obtenerEquiposLigaArgentina,
+  obtenerFixturesLigaArgentina,
+  obtenerTablaLigaArgentina
 }
