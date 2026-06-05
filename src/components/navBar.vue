@@ -1,8 +1,8 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark sticky-top glass-navbar py-3" v-if="usuarioActual">
     <div class="container">
-      <a class="navbar-brand fw-bold text-neon text-uppercase tracking-wide" href="#">
-        <span class="fs-4">⚽ Fixture Arg</span>
+      <a class="navbar-brand text-neon text-uppercase tracking-wide" href="#">
+        <span class="fs-4 fw-bold">📊 DataGol</span>
       </a>
       
       <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,20 +24,7 @@
             <RouterLink class="nav-link custom-link" active-class="active-link" to="/estadisticas">Estadísticas</RouterLink>
           </li>
           <li class="nav-item">
-            <RouterLink class="nav-link custom-link" active-class="active-link" to="/jugadores">Jugadores</RouterLink>
-          </li>
-          <li class="nav-item">
             <RouterLink class="nav-link custom-link" active-class="active-link" to="/mi-equipo">Mi Equipo</RouterLink>
-          </li>
-
-          <li v-if="usuarioActual?.rol === 'admin'" class="nav-item" style="position: relative;">
-            <a class="nav-link custom-link" href="#" @click.prevent="toggleAdminMenu" style="cursor: pointer;">
-              Admin ▾
-            </a>
-            <div v-if="adminMenuAbierto" class="dropdown-menu-custom" @click="adminMenuAbierto = false">
-              <RouterLink class="dropdown-item-custom" active-class="active-link" to="/admin/jugadores">ABM Jugadores</RouterLink>
-              <RouterLink class="dropdown-item-custom" active-class="active-link" to="/admin/dashboard">Dashboard</RouterLink>
-            </div>
           </li>
           
           <li class="nav-item ms-lg-3 d-flex align-items-center gap-3 border-start border-secondary ps-lg-3">
@@ -62,19 +49,6 @@ import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
 const router = useRouter()
 const usuarioActual = ref(null)
-const adminMenuAbierto = ref(false)
-
-const toggleAdminMenu = () => {
-  adminMenuAbierto.value = !adminMenuAbierto.value
-}
-
-const cerrarAdminMenu = () => {
-  adminMenuAbierto.value = false
-}
-
-watch(() => route.path, () => {
-  adminMenuAbierto.value = false
-})
 
 const checkAuth = () => {
   let estadoLogueado = null
@@ -110,6 +84,11 @@ const logout = () => {
   letter-spacing: 1.5px;
 }
 
+.text-neon {
+  text-shadow: 0 0 10px rgba(0, 250, 154, 0.6);
+  color: #ffffff;
+}
+
 .custom-link {
   color: #a0aec0 !important;
   transition: all 0.3s ease;
@@ -127,33 +106,5 @@ const logout = () => {
   color: #00fa9a !important;
   background: rgba(0, 250, 154, 0.1);
   box-shadow: inset 0 -2px 0 #00fa9a;
-}
-
-.dropdown-menu-custom {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.5rem;
-  padding: 0.5rem;
-  min-width: 180px;
-  z-index: 1000;
-  margin-top: 4px;
-}
-
-.dropdown-item-custom {
-  display: block;
-  padding: 0.5rem 1rem;
-  color: #a0aec0;
-  text-decoration: none;
-  border-radius: 0.4rem;
-  transition: all 0.2s ease;
-}
-
-.dropdown-item-custom:hover {
-  background: rgba(0, 250, 154, 0.1);
-  color: #00fa9a;
 }
 </style>
