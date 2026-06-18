@@ -8,6 +8,8 @@ import LoginView from '../views/LoginView.vue'
 import JugadoresView from '../views/JugadoresView.vue'
 import AdminJugadoresView from '../views/AdminJugadoresView.vue'
 import AdminDashboardView from '../views/AdminDashboardView.vue'
+import IAPreguntasView from '../views/IAPreguntasView.vue'
+import MiPerfilView from '../views/MiPerfilView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -41,6 +43,16 @@ const router = createRouter({
       path: '/jugadores',
       name: 'jugadores',
       component: JugadoresView
+    },
+    {
+      path: '/ia-preguntas',
+      name: 'ia-preguntas',
+      component: IAPreguntasView
+    },
+    {
+      path: '/mi-perfil',
+      name: 'mi-perfil',
+      component: MiPerfilView
     },
     {
       path: '/admin/jugadores',

@@ -5,6 +5,12 @@
       <p class="text-neon fw-semibold tracking-wide">PLANTEL DE LA LIGA PROFESIONAL</p>
     </div>
 
+    <div v-if="esAdmin" class="text-end mb-4">
+      <RouterLink to="/admin/jugadores" class="btn btn-outline-success rounded-pill px-4 fw-bold py-2">
+        ⚙️ Gestionar Jugadores
+      </RouterLink>
+    </div>
+
     <div v-if="jugadores.length === 0" class="glass-card p-5 text-center shadow">
       <p class="text-secondary fs-5 mb-0">No hay jugadores registrados aún.</p>
     </div>
@@ -70,6 +76,7 @@ import { obtenerJugadores } from '../services/jugadoresService'
 const jugadores = ref([])
 const cargando = ref(true)
 const error = ref('')
+const esAdmin = ref(false)
 
 const cargarJugadores = async () => {
   cargando.value = true
@@ -84,7 +91,16 @@ const cargarJugadores = async () => {
   }
 }
 
+const checkRol = () => {
+  const userStr = localStorage.getItem('usuarioLogueado')
+  if (userStr) {
+    const user = JSON.parse(userStr)
+    esAdmin.value = user.rol === 'admin'
+  }
+}
+
 onMounted(() => {
+  checkRol()
   cargarJugadores()
 })
 </script>

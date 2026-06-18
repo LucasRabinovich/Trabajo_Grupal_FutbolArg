@@ -3,9 +3,14 @@
     <div class="text-center mb-5">
       <h1 class="display-4 fw-bold text-white">Estadísticas Individuales</h1>
       <p class="text-secondary mb-3">Rendimiento de jugadores en el Torneo Apertura</p>
-      <small class="badge bg-success bg-opacity-25 text-neon border border-success rounded-pill px-3 py-2 fw-semibold">
-        Última actualización: 26 de Mayo de 2026
-      </small>
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <small class="badge bg-success bg-opacity-25 text-neon border border-success rounded-pill px-3 py-2 fw-semibold">
+          Última actualización: 26 de Mayo de 2026
+        </small>
+        <RouterLink v-if="esAdmin" to="/admin/dashboard" class="badge bg-danger bg-opacity-25 text-danger border border-danger rounded-pill px-3 py-2 fw-semibold text-decoration-none">
+          📊 Ir al Dashboard Admin
+        </RouterLink>
+      </div>
     </div>
 
     <div class="row g-4">
@@ -86,6 +91,7 @@ const goleadores = ref([])
 const asistidores = ref([])
 const vallas = ref([])
 const logosEquipos = ref({})
+const esAdmin = ref(false)
 
 const cargarEstadisticas = () => {
   goleadores.value = obtenerGoleadores()
@@ -109,7 +115,16 @@ const obtenerEscudo = (nombre) => {
   return obtenerEscudoDesdeMapa(logosEquipos.value, nombre)
 }
 
+const checkRol = () => {
+  const userStr = localStorage.getItem('usuarioLogueado')
+  if (userStr) {
+    const user = JSON.parse(userStr)
+    esAdmin.value = user.rol === 'admin'
+  }
+}
+
 const cargarDatos = async () => {
+  checkRol()
   cargarEstadisticas()
   await cargarEscudos()
 }

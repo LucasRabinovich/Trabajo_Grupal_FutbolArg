@@ -24,12 +24,30 @@
             <RouterLink class="nav-link custom-link" active-class="active-link" to="/estadisticas">Estadísticas</RouterLink>
           </li>
           <li class="nav-item">
+            <RouterLink class="nav-link custom-link" active-class="active-link" to="/jugadores">Jugadores</RouterLink>
+          </li>
+          <li class="nav-item">
+            <RouterLink class="nav-link custom-link" active-class="active-link" to="/ia-preguntas">IA Preguntas</RouterLink>
+          </li>
+          <li class="nav-item">
             <RouterLink class="nav-link custom-link" active-class="active-link" to="/mi-equipo">Mi Equipo</RouterLink>
+          </li>
+
+          <li v-if="usuarioActual?.rol === 'admin'" class="nav-item" style="position: relative;">
+            <a class="nav-link custom-link" href="#" @click.prevent="toggleAdminMenu" style="cursor: pointer;">
+              Admin ▾
+            </a>
+            <div v-if="adminMenuAbierto" class="dropdown-menu-custom" @click="adminMenuAbierto = false">
+              <RouterLink class="dropdown-item-custom" active-class="active-link" to="/admin/jugadores">ABM Jugadores</RouterLink>
+              <RouterLink class="dropdown-item-custom" active-class="active-link" to="/admin/dashboard">Dashboard</RouterLink>
+            </div>
           </li>
           
           <li class="nav-item ms-lg-3 d-flex align-items-center gap-3 border-start border-secondary ps-lg-3">
             <div class="text-end d-none d-lg-block">
-              <span class="d-block text-white text-capitalize" style="font-size: 0.85rem;">{{ usuarioActual.username }}</span>
+              <span class="d-block" style="font-size: 0.85rem;">
+                <RouterLink class="text-neon text-decoration-none" to="/mi-perfil">{{ usuarioActual.username }}</RouterLink>
+              </span>
               <span class="badge" :class="usuarioActual.rol === 'admin' ? 'bg-danger' : 'bg-secondary'" style="font-size: 0.7rem;">
                 {{ usuarioActual.rol === 'admin' ? 'Admin' : 'Usuario' }}
               </span>
@@ -49,6 +67,11 @@ import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
 const router = useRouter()
 const usuarioActual = ref(null)
+const adminMenuAbierto = ref(false)
+
+const toggleAdminMenu = () => {
+  adminMenuAbierto.value = !adminMenuAbierto.value
+}
 
 const checkAuth = () => {
   let estadoLogueado = null
@@ -63,6 +86,7 @@ const checkAuth = () => {
 
 watch(() => route.path, () => {
   checkAuth()
+  adminMenuAbierto.value = false
 }, { immediate: true })
 
 const logout = () => {
@@ -106,5 +130,33 @@ const logout = () => {
   color: #00fa9a !important;
   background: rgba(0, 250, 154, 0.1);
   box-shadow: inset 0 -2px 0 #00fa9a;
+}
+
+.dropdown-menu-custom {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  min-width: 180px;
+  z-index: 1000;
+  margin-top: 4px;
+}
+
+.dropdown-item-custom {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: #a0aec0;
+  text-decoration: none;
+  border-radius: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item-custom:hover {
+  background: rgba(0, 250, 154, 0.1);
+  color: #00fa9a;
 }
 </style>
