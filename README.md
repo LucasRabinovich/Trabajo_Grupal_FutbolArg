@@ -1,38 +1,165 @@
-# mi-crud-vue-router
+# ⚽ Fixture ARG
 
-This template should help get you started developing with Vue 3 in Vite.
+Aplicación web desarrollada con Vue 3 para consultar información del fútbol argentino, gestionar jugadores, visualizar estadísticas y utilizar herramientas de Inteligencia Artificial para análisis y consultas deportivas.
 
-## Recommended IDE Setup
+---
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+# 🎯 Objetivo
 
-## Recommended Browser Setup
+El objetivo de la aplicación es brindar una plataforma que permita a los usuarios acceder a información relevante del fútbol argentino, incluyendo partidos, equipos, posiciones, estadísticas y jugadores.
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+La aplicación incorpora diferentes perfiles de usuario, funcionalidades administrativas y herramientas de Inteligencia Artificial para enriquecer la experiencia de uso.
 
-## Customize configuration
+---
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+# 🚀 Funcionalidades
 
-## Project Setup
+## Usuarios
 
-```sh
+- Registro de usuarios
+- Inicio de sesión
+- Gestión de perfiles
+- Roles diferenciados (Administrador / Usuario)
+
+## Equipos
+
+- Visualización de equipos
+- Consulta de escudos e información general
+- Selección de equipo favorito
+
+## Partidos
+
+- Consulta de próximos partidos
+- Visualización de fixtures
+- Información de fecha y horario
+
+## Posiciones
+
+- Tabla de posiciones
+- Estadísticas generales por equipo
+
+## Estadísticas
+
+- Ranking de goleadores
+- Ranking de asistidores
+- Vallas invictas
+
+## Gestión de Jugadores (ABM)
+
+Funcionalidad exclusiva para administradores:
+
+- Alta de jugadores
+- Modificación de jugadores
+- Eliminación de jugadores
+- Consulta de jugadores registrados
+
+Persistencia mediante MockAPI.
+
+## Dashboard Administrativo
+
+Funcionalidad exclusiva para administradores:
+
+- Reportes deportivos
+- Métricas generales
+- Estadísticas de jugadores
+- Indicadores para análisis
+
+## Inteligencia Artificial
+
+- Chat interactivo
+- Consultas relacionadas con fútbol argentino
+- Generación de análisis deportivos
+
+---
+
+# 🛠 Tecnologías Utilizadas
+
+- Vue 3
+- Composition API
+- Vue Router
+- Axios
+- MockAPI
+- API-Football
+- Google Gemini AI
+- Git & GitHub
+
+---
+
+# ⚙️ Configuración
+
+## Instalar dependencias
+
+```bash
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+## Ejecutar en desarrollo
 
-```sh
+```bash
 npm run dev
 ```
 
-### Compile and Minify for Production
+## Generar build
 
-```sh
+```bash
 npm run build
 ```
+
+---
+
+# 🔑 Variables de Entorno
+
+Crear un archivo `.env` en la raíz del proyecto utilizando como referencia `.env.example`.
+
+Ejemplo:
+
+```env
+VITE_MOCKAPI_URL=TU_URL_MOCKAPI
+
+VITE_API_FOOTBALL_KEY=TU_API_FOOTBALL_KEY
+
+VITE_GEMINI_API_KEY=TU_GEMINI_API_KEY
+```
+
+---
+
+# 👥 Roles
+
+## Usuario
+
+Puede:
+
+- Consultar partidos
+- Consultar equipos
+- Consultar posiciones
+- Consultar estadísticas
+- Utilizar funcionalidades de IA
+- Gestionar su perfil
+
+## Administrador
+
+Además de las funcionalidades de usuario:
+
+- Gestionar jugadores (ABM)
+- Acceder al dashboard administrativo
+- Consultar reportes y análisis
+
+---
+
+# 📚 Trabajo Práctico Final
+
+Materia: Desarrollo Web Front-End
+
+El proyecto integra los conceptos trabajados durante la cursada:
+
+- Vue 3
+- Composition API
+- Vue Router
+- Consumo de APIs
+- Persistencia mediante REST API
+- Gestión de usuarios y roles
+- Dashboards e informes
+- Integración con Inteligencia Artificial
+
+---
+
