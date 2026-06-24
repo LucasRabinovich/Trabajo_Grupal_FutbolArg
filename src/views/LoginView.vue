@@ -128,6 +128,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { obtenerEquiposLigaArgentina } from '../services/footballApi.js'
 import { crearMapaLogos } from '../services/escudosService.js'
+import { obtenerUsuarios, crearUsuario } from '../services/usuariosService.js'
 
 const isLogin = ref(true)
 const usuario = ref('')
@@ -177,10 +178,8 @@ const togglePasswordRegistro = () => {
   mostrarPasswordRegistro.value = !mostrarPasswordRegistro.value
 }
 
-const handleLogin = () => {
+const handleLogin = async () => {
   let validacion = false
-  const registrados = JSON.parse(localStorage.getItem('usuariosRegistrados') || '[]')
-  const personalizado = registrados.find(u => u.username.toLowerCase() === usuario.value.toLowerCase() && u.password === password.value)
 
   if (usuario.value.toLowerCase() === 'admin' && password.value === '1234') {
     const adminData = { username: 'Administrador', rol: 'admin' }
@@ -190,12 +189,21 @@ const handleLogin = () => {
     const userData = { username: 'Hincha', rol: 'user' }
     localStorage.setItem('usuarioLogueado', JSON.stringify(userData))
     validacion = true
-  } else if (personalizado) {
-    const customData = { username: personalizado.username, rol: personalizado.rol }
-    localStorage.setItem('usuarioLogueado', JSON.stringify(customData))
-    validacion = true
   } else {
-    errorMensaje.value = 'Credenciales incorrectas'
+    try {
+      const usuarios = await obtenerUsuarios()
+      const personalizado = usuarios.find(u => u.username.toLowerCase() === usuario.value.toLowerCase() && u.password === password.value)
+
+      if (personalizado) {
+        const customData = { username: personalizado.username, rol: personalizado.rol || 'user' }
+        localStorage.setItem('usuarioLogueado', JSON.stringify(customData))
+        validacion = true
+      } else {
+        errorMensaje.value = 'Credenciales incorrectas'
+      }
+    } catch (e) {
+      errorMensaje.value = 'Error al conectar con la base de datos'
+    }
   }
 
   if (validacion) {
@@ -203,27 +211,41 @@ const handleLogin = () => {
   }
 }
 
-const handleRegister = () => {
-  const registrados = JSON.parse(localStorage.getItem('usuariosRegistrados') || '[]')
-  const existe = registrados.some(u => u.username.toLowerCase() === nuevoUsuario.value.toLowerCase())
-
+const handleRegister = async () => {
   if (nuevaPassword.value.length < 5) {
     errorMensaje.value = 'La contraseña debe tener al menos 5 caracteres'
-  } else if (nuevoUsuario.value.toLowerCase() === 'admin' || nuevoUsuario.value.toLowerCase() === 'user' || existe) {
+    return
+  }
+
+  if (nuevoUsuario.value.toLowerCase() === 'admin' || nuevoUsuario.value.toLowerCase() === 'user') {
     errorMensaje.value = 'El nombre de usuario no está disponible'
-  } else {
-    registrados.push({
+    return
+  }
+
+  try {
+    const usuarios = await obtenerUsuarios()
+    const existe = usuarios.some(u => u.username.toLowerCase() === nuevoUsuario.value.toLowerCase())
+
+    if (existe) {
+      errorMensaje.value = 'El nombre de usuario no está disponible'
+      return
+    }
+
+    await crearUsuario({
       username: nuevoUsuario.value,
       password: nuevaPassword.value,
       rol: 'user'
     })
-    localStorage.setItem('usuariosRegistrados', JSON.stringify(registrados))
+
     exitoMensaje.value = 'Cuenta creada con éxito. Ya podés iniciar sesión.'
     errorMensaje.value = ''
     usuario.value = nuevoUsuario.value
     nuevoUsuario.value = ''
     nuevaPassword.value = ''
     isLogin.value = true
+  } catch (e) {
+    errorMensaje.value = 'Error al crear la cuenta. Intentá de nuevo.'
+    console.error(e)
   }
 }
 

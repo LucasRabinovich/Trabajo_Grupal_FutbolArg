@@ -8,6 +8,7 @@ import LoginView from '../views/LoginView.vue'
 import JugadoresView from '../views/JugadoresView.vue'
 import AdminJugadoresView from '../views/AdminJugadoresView.vue'
 import AdminDashboardView from '../views/AdminDashboardView.vue'
+import AdminUsuariosView from '../views/AdminUsuariosView.vue'
 import IAPreguntasView from '../views/IAPreguntasView.vue'
 import MiPerfilView from '../views/MiPerfilView.vue'
 
@@ -58,6 +59,12 @@ const router = createRouter({
       path: '/admin/jugadores',
       name: 'admin-jugadores',
       component: AdminJugadoresView,
+      meta: { requiresAdmin: true }
+    },
+    {
+      path: '/admin/usuarios',
+      name: 'admin-usuarios',
+      component: AdminUsuariosView,
       meta: { requiresAdmin: true }
     },
     {

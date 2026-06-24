@@ -39,6 +39,7 @@
             </a>
             <div v-if="adminMenuAbierto" class="dropdown-menu-custom" @click="adminMenuAbierto = false">
               <RouterLink class="dropdown-item-custom" active-class="active-link" to="/admin/jugadores">ABM Jugadores</RouterLink>
+              <RouterLink class="dropdown-item-custom" active-class="active-link" to="/admin/usuarios">Usuarios</RouterLink>
               <RouterLink class="dropdown-item-custom" active-class="active-link" to="/admin/dashboard">Dashboard</RouterLink>
             </div>
           </li>
