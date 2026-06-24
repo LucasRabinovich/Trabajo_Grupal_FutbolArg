@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import PartidosView from '../views/PartidosView.vue'
 import EquiposView from '../views/EquiposView.vue'
 import PosicionesView from '../views/PosicionesView.vue'
@@ -13,7 +13,7 @@ import IAPreguntasView from '../views/IAPreguntasView.vue'
 import MiPerfilView from '../views/MiPerfilView.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
