@@ -50,6 +50,10 @@
           </p>
         </div>
 
+        <div v-if="mensajeEliminacion" class="alert alert-info py-2 mb-4 rounded-3 border-info bg-info bg-opacity-25 text-white text-center fw-semibold glass-alert shadow-sm" style="font-size: 0.9rem;">
+          {{ mensajeEliminacion }}
+        </div>
+
         <div v-if="exitoMensaje" class="alert alert-success py-2 mb-4 rounded-3 border-success bg-success bg-opacity-25 text-white text-center fw-semibold glass-alert shadow-sm" style="font-size: 0.9rem;">
           {{ exitoMensaje }}
         </div>
@@ -78,7 +82,7 @@
           </div>
 
           <div class="mb-4 form-check custom-checkbox">
-            <input type="checkbox" class="form-check-input bg-transparent border-secondary" id="remember" style="cursor: pointer;">
+             <input type="checkbox" class="form-check-input bg-transparent border-secondary" id="remember" style="cursor: pointer;">
             <label class="form-check-label text-secondary ms-1 mt-1" for="remember" style="font-size: 0.85rem; cursor: pointer;">Mantener sesión iniciada</label>
           </div>
 
@@ -117,7 +121,6 @@
             <a href="#" @click.prevent="toggleAuthMode" class="text-neon text-decoration-none fw-bold ms-1">Iniciá sesión</a>
           </p>
         </form>
-
       </div>
     </div>
   </div>
@@ -125,10 +128,9 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { obtenerEquiposLigaArgentina } from '../services/footballApi.js'
 import { crearMapaLogos } from '../services/escudosService.js'
-import { obtenerUsuarios, crearUsuario } from '../services/usuariosService.js'
 
 const isLogin = ref(true)
 const usuario = ref('')
@@ -137,19 +139,23 @@ const nuevoUsuario = ref('')
 const nuevaPassword = ref('')
 const errorMensaje = ref('')
 const exitoMensaje = ref('')
+const mensajeEliminacion = ref('')
 const cargandoEscudos = ref(true)
 const mostrarPasswordLogin = ref(false)
 const mostrarPasswordRegistro = ref(false)
 const router = useRouter()
+const route = useRoute()
 const escudosList = ref([])
 
 const cargarEscudos = async () => {
+  let completado = false
   let listaDestino = []
   try {
     const respuesta = await obtenerEquiposLigaArgentina()
     const logosObj = crearMapaLogos(respuesta)
     const arrayLogos = Object.values(logosObj)
     listaDestino = arrayLogos.slice(0, 6)
+    completado = true
   } catch (error) {
     listaDestino = [
       'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Boca_Juniors_logo18.svg/120px-Boca_Juniors_logo18.svg.png',
@@ -162,95 +168,128 @@ const cargarEscudos = async () => {
   }
   escudosList.value = listaDestino
   cargandoEscudos.value = false
+  return completado
 }
 
 const toggleAuthMode = () => {
+  let ejecutado = true
   isLogin.value = !isLogin.value
   errorMensaje.value = ''
   exitoMensaje.value = ''
+  return ejecutado
 }
 
 const togglePasswordLogin = () => {
+  let ejecutado = true
   mostrarPasswordLogin.value = !mostrarPasswordLogin.value
+  return ejecutado
 }
 
 const togglePasswordRegistro = () => {
+  let ejecutado = true
   mostrarPasswordRegistro.value = !mostrarPasswordRegistro.value
+  return ejecutado
 }
 
 const handleLogin = async () => {
   let validacion = false
+  errorMensaje.value = ''
 
   if (usuario.value.toLowerCase() === 'admin' && password.value === '1234') {
-    const adminData = { username: 'Administrador', rol: 'admin' }
+    const adminData = { id: 'admin', username: 'Administrador', rol: 'admin' }
     localStorage.setItem('usuarioLogueado', JSON.stringify(adminData))
     validacion = true
+    router.push('/')
   } else if (usuario.value.toLowerCase() === 'user' && password.value === '1234') {
-    const userData = { username: 'Hincha', rol: 'user' }
+    const userData = { id: 'user', username: 'Hincha', rol: 'user' }
     localStorage.setItem('usuarioLogueado', JSON.stringify(userData))
     validacion = true
+    router.push('/')
   } else {
     try {
-      const usuarios = await obtenerUsuarios()
-      const personalizado = usuarios.find(u => u.username.toLowerCase() === usuario.value.toLowerCase() && u.password === password.value)
-
-      if (personalizado) {
-        const customData = { username: personalizado.username, rol: personalizado.rol || 'user' }
-        localStorage.setItem('usuarioLogueado', JSON.stringify(customData))
-        validacion = true
+      const url = `${import.meta.env.VITE_MOCKAPI_URL}/usuarios`
+      const res = await fetch(url)
+      if (res.ok) {
+        const usuarios = await res.json()
+        const personalizado = usuarios.find(u => u.username.toLowerCase() === usuario.value.toLowerCase() && u.password === password.value)
+        
+        if (personalizado) {
+          const customData = { id: personalizado.id, username: personalizado.username, rol: personalizado.rol }
+          localStorage.setItem('usuarioLogueado', JSON.stringify(customData))
+          validacion = true
+          router.push('/')
+        } else {
+          errorMensaje.value = 'Credenciales incorrectas'
+        }
       } else {
-        errorMensaje.value = 'Credenciales incorrectas'
+        errorMensaje.value = 'Error al conectar con la base de datos'
       }
-    } catch (e) {
-      errorMensaje.value = 'Error al conectar con la base de datos'
+    } catch (error) {
+      errorMensaje.value = 'Error de conexión'
     }
   }
-
-  if (validacion) {
-    router.push('/')
-  }
+  return validacion
 }
 
 const handleRegister = async () => {
+  let exito = false
+  errorMensaje.value = ''
+
   if (nuevaPassword.value.length < 5) {
     errorMensaje.value = 'La contraseña debe tener al menos 5 caracteres'
-    return
-  }
-
-  if (nuevoUsuario.value.toLowerCase() === 'admin' || nuevoUsuario.value.toLowerCase() === 'user') {
+  } else if (nuevoUsuario.value.toLowerCase() === 'admin' || nuevoUsuario.value.toLowerCase() === 'user') {
     errorMensaje.value = 'El nombre de usuario no está disponible'
-    return
-  }
+  } else {
+    try {
+      const url = `${import.meta.env.VITE_MOCKAPI_URL}/usuarios`
+      const resBusqueda = await fetch(url)
+      let existe = false
+      
+      if (resBusqueda.ok) {
+        const usuariosTotales = await resBusqueda.json()
+        existe = usuariosTotales.some(u => u.username.toLowerCase() === nuevoUsuario.value.toLowerCase())
+      }
 
-  try {
-    const usuarios = await obtenerUsuarios()
-    const existe = usuarios.some(u => u.username.toLowerCase() === nuevoUsuario.value.toLowerCase())
+      if (existe) {
+        errorMensaje.value = 'El nombre de usuario ya está en uso'
+      } else {
+        const nuevoObj = {
+          username: nuevoUsuario.value,
+          password: nuevaPassword.value,
+          rol: 'user'
+        }
+        
+        const postRes = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(nuevoObj)
+        })
 
-    if (existe) {
-      errorMensaje.value = 'El nombre de usuario no está disponible'
-      return
+        if (postRes.ok) {
+          exitoMensaje.value = 'Cuenta creada con éxito. Ya podés iniciar sesión.'
+          usuario.value = nuevoUsuario.value
+          nuevoUsuario.value = ''
+          nuevaPassword.value = ''
+          isLogin.value = true
+          exito = true
+        } else {
+          errorMensaje.value = 'Error al guardar el usuario'
+        }
+      }
+    } catch (error) {
+      errorMensaje.value = 'Error de conexión con la base de datos'
     }
-
-    await crearUsuario({
-      username: nuevoUsuario.value,
-      password: nuevaPassword.value,
-      rol: 'user'
-    })
-
-    exitoMensaje.value = 'Cuenta creada con éxito. Ya podés iniciar sesión.'
-    errorMensaje.value = ''
-    usuario.value = nuevoUsuario.value
-    nuevoUsuario.value = ''
-    nuevaPassword.value = ''
-    isLogin.value = true
-  } catch (e) {
-    errorMensaje.value = 'Error al crear la cuenta. Intentá de nuevo.'
-    console.error(e)
   }
+  return exito
 }
 
 onMounted(() => {
   cargarEscudos()
+  if (route.query.mensaje === 'borrado') {
+    mensajeEliminacion.value = 'Tu usuario fue borrado con éxito.'
+  }
 })
 </script>
 
