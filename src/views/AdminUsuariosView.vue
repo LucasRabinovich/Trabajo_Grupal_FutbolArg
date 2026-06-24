@@ -36,13 +36,22 @@
                 </span>
               </td>
               <td class="py-3 px-4 text-center">
-                <button
-                  v-if="usuario.username.toLowerCase() !== 'admin' && usuario.username.toLowerCase() !== 'user'"
-                  class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold"
-                  @click="abrirModal(usuario)"
-                >
-                  Eliminar
-                </button>
+                <template v-if="usuario.username.toLowerCase() !== 'admin' && usuario.username.toLowerCase() !== 'user'">
+                  <button
+                    class="btn btn-sm rounded-pill px-3 fw-bold me-2"
+                    :class="usuario.rol === 'admin' ? 'btn-outline-warning' : 'btn-outline-success'"
+                    :disabled="procesandoRol === usuario.id"
+                    @click="toggleRol(usuario)"
+                  >
+                    {{ procesandoRol === usuario.id ? '...' : usuario.rol === 'admin' ? 'Quitar Admin' : 'Hacer Admin' }}
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold"
+                    @click="abrirModal(usuario)"
+                  >
+                    Eliminar
+                  </button>
+                </template>
                 <span v-else class="text-secondary" style="font-size: 0.8rem;">🔒 Protegido</span>
               </td>
             </tr>
@@ -55,7 +64,7 @@
       {{ mensaje }}
     </div>
 
-    <!-- Modal de confirmación -->
+    <!-- Modal eliminar -->
     <div v-if="showModal" class="modal-backdrop-glass d-flex justify-content-center align-items-center">
       <div class="glass-card p-5 shadow-lg text-center" style="max-width: 450px; width: 90%; border-color: rgba(220, 53, 69, 0.3);">
         <div class="mb-3">
@@ -80,7 +89,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { obtenerUsuarios, eliminarUsuario } from '../services/usuariosService'
+import { obtenerUsuarios, eliminarUsuario, actualizarUsuario } from '../services/usuariosService'
 
 const usuarios = ref([])
 const cargando = ref(true)
@@ -88,6 +97,7 @@ const mensaje = ref('')
 const mensajeTipo = ref('')
 const showModal = ref(false)
 const procesando = ref(false)
+const procesandoRol = ref(null)
 const usuarioSeleccionado = ref(null)
 
 const mostrarMensaje = (texto, tipo = 'alert-success bg-success bg-opacity-25 border-success') => {
@@ -101,7 +111,7 @@ const cargarUsuarios = async () => {
   try {
     usuarios.value = await obtenerUsuarios()
   } catch (e) {
-    mostrarMensaje('Error al cargar usuarios', 'alert-danger bg-danger bg-opacity-25 border-danger')
+    mostrarMensaje('Error al cargar usuarios.', 'alert-danger bg-danger bg-opacity-25 border-danger')
   } finally {
     cargando.value = false
   }
@@ -122,13 +132,27 @@ const ejecutarEliminar = async () => {
   procesando.value = true
   try {
     await eliminarUsuario(usuarioSeleccionado.value.id)
+    mostrarMensaje(`Usuario "${usuarioSeleccionado.value.username}" eliminado correctamente.`)
     cerrarModal()
-    mostrarMensaje(`Usuario "${usuarioSeleccionado?.value?.username ?? ''}" eliminado correctamente.`)
     await cargarUsuarios()
   } catch (e) {
     mostrarMensaje('Error al eliminar el usuario.', 'alert-danger bg-danger bg-opacity-25 border-danger')
   } finally {
     procesando.value = false
+  }
+}
+
+const toggleRol = async (usuario) => {
+  procesandoRol.value = usuario.id
+  const nuevoRol = usuario.rol === 'admin' ? 'user' : 'admin'
+  try {
+    await actualizarUsuario(usuario.id, { ...usuario, rol: nuevoRol })
+    mostrarMensaje(`Rol de "${usuario.username}" actualizado a ${nuevoRol === 'admin' ? 'Administrador' : 'Usuario'}.`)
+    await cargarUsuarios()
+  } catch (e) {
+    mostrarMensaje('Error al actualizar el rol.', 'alert-danger bg-danger bg-opacity-25 border-danger')
+  } finally {
+    procesandoRol.value = null
   }
 }
 

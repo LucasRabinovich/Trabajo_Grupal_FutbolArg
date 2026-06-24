@@ -30,8 +30,14 @@ const eliminarUsuario = async (id) => {
   return normalizar(respuesta.data)
 }
 
+const actualizarUsuario = async (id, datos) => {
+  const respuesta = await cliente.put(`/usuarios/${id}`, datos)
+  return normalizar(respuesta.data)
+}
+
 export {
   obtenerUsuarios,
   crearUsuario,
-  eliminarUsuario
+  eliminarUsuario,
+  actualizarUsuario
 }
