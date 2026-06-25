@@ -1,7 +1,12 @@
 <template>
   <NavBar />
+
   <main class="main-content">
-    <RouterView />
+    <RouterView v-slot="{ Component }">
+      <Transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </Transition>
+    </RouterView>
   </main>
 </template>
 
@@ -21,6 +26,10 @@ body {
   background-attachment: fixed;
 }
 
+.main-content {
+  min-height: calc(100vh - 70px);
+}
+
 .glass-card {
   background: rgba(25, 30, 36, 0.7) !important;
   backdrop-filter: blur(10px);
@@ -32,5 +41,16 @@ body {
 .text-neon {
   color: #00fa9a !important;
   text-shadow: 0 0 10px rgba(0, 250, 154, 0.5);
+}
+
+/* Transición entre vistas */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
