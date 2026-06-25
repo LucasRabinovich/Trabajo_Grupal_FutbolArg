@@ -11,6 +11,7 @@ import AdminDashboardView from '../views/AdminDashboardView.vue'
 import AdminUsuariosView from '../views/AdminUsuariosView.vue'
 import IAPreguntasView from '../views/IAPreguntasView.vue'
 import MiPerfilView from '../views/MiPerfilView.vue'
+import NotFoundView from '../views/NotFoundView.vue'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -77,6 +78,11 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: NotFoundView
     }
   ]
 })
@@ -85,12 +91,13 @@ router.beforeEach((to, from) => {
   let rutaDestino = true
   const usuarioLogueado = localStorage.getItem('usuarioLogueado')
 
-  if (to.name !== 'login' && usuarioLogueado === null) {
+  if (to.name !== 'login' && to.name !== 'not-found' && usuarioLogueado === null) {
     rutaDestino = { name: 'login' }
   } else if (to.name === 'login' && usuarioLogueado !== null) {
     rutaDestino = { name: 'partidos' }
   } else if (to.meta.requiresAdmin && usuarioLogueado !== null) {
     const usuario = JSON.parse(usuarioLogueado)
+
     if (usuario.rol !== 'admin') {
       rutaDestino = { name: 'partidos' }
     }
