@@ -73,16 +73,9 @@ const cargarEscudos = async () => {
 const cargarPartidos = async () => {
   try {
     const partidosApi = await obtenerFixturesLigaArgentina()
+    const apiPartidos = obtenerPartidosApi(partidosApi)
 
-    console.log(
-      [...new Set(
-        partidosApi.map(
-          partido => partido.fixture.status.short
-        )
-      )]
-    )
-
-    partidos.value = obtenerPartidosApi(partidosApi)
+    partidos.value = apiPartidos.length > 0 ? apiPartidos : obtenerPartidos()
   } catch (error) {
     console.error(error)
 
