@@ -47,19 +47,19 @@ const obtenerDatosApi = async (endpoint, mensajeError) => {
 }
 
 const obtenerEquiposLigaArgentina = async () => {
-  return obtenerConCache('equipos', () =>
+  return obtenerConCache('equipos_v2', () =>
     obtenerDatosApi('/teams?league=128&season=2024', 'Error al obtener equipos')
   )
 }
 
 const obtenerFixturesLigaArgentina = async () => {
-  return obtenerConCache('fixtures', () =>
+  return obtenerConCache('fixtures_v2', () =>
     obtenerDatosApi('/fixtures?league=128&season=2024&next=15', 'Error al obtener partidos')
   )
 }
 
 const obtenerTablaLigaArgentina = async () => {
-  return obtenerConCache('standings', () =>
+  return obtenerConCache('standings_v2', () =>
     obtenerDatosApi('/standings?league=128&season=2024', 'Error al obtener tabla de posiciones')
   )
 }
