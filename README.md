@@ -1,4 +1,4 @@
-# ⚽ Fixture ARG
+# ⚽ DataGol
 
 Aplicación web desarrollada con Vue 3 para consultar información del fútbol argentino, gestionar jugadores, visualizar estadísticas y utilizar herramientas de Inteligencia Artificial para análisis y consultas deportivas.
 
@@ -21,10 +21,18 @@ La aplicación incorpora diferentes perfiles de usuario, funcionalidades adminis
 - Gestión de perfiles
 - Roles diferenciados (Administrador / Usuario)
 
+## Gestión de Usuarios (ABM)
+
+Funcionalidad exclusiva para administradores:
+
+- Consulta de usuarios registrados
+- Cambio de rol de usuario
+- Eliminación de usuarios
+
 ## Equipos
 
-- Visualización de equipos
-- Consulta de escudos e información general
+- Consulta de equipos de la Liga Profesional
+- Visualización de escudos
 - Selección de equipo favorito
 
 ## Partidos
@@ -59,16 +67,16 @@ Persistencia mediante MockAPI.
 
 Funcionalidad exclusiva para administradores:
 
-- Reportes deportivos
+- Reportes y métricas del sistema
 - Métricas generales
 - Estadísticas de jugadores
 - Indicadores para análisis
 
 ## Inteligencia Artificial
 
-- Chat interactivo
-- Consultas relacionadas con fútbol argentino
-- Generación de análisis deportivos
+- Chat interactivo con Google Gemini
+- Consultas sobre equipos, jugadores, partidos y estadísticas
+- Generación automática de análisis para el dashboard administrativo
 
 ---
 
